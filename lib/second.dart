@@ -1,69 +1,126 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:prepakt/data.dart';
 import 'package:prepakt/eff.dart';
 
-class UserData {
-  final String nom;
-  final String prenom;
-  final String vle;
-  final bool check;
-  final double price;
 
-  UserData({
-    required this.nom,
-    required this.prenom,
-    required this.vle,
-    required this.check,
-    required this.price,
-  });
-}
+
 
 void main() {
   runApp(M2());
 }
 
-class M2 extends StatefulWidget {
+class M2 extends StatelessWidget {
   const M2({super.key});
 
   @override
-  State<M2> createState() => _M2State();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Page(),
+    );
+  }
 }
 
-class _M2State extends State<M2> {
-  var nomController = TextEditingController();
-  var prnomController = TextEditingController();
-  var dateController = TextEditingController();
-  String? vle = "";
-  bool check = false;
+class Page extends StatefulWidget {
+  const Page({super.key});
+
+  @override
+  State<Page> createState() => _PageState();
+}
+
+class _PageState extends State<Page> {
+  var nController = TextEditingController();
+  var pController = TextEditingController();
+  var dController = TextEditingController();
+  String convention = "";
+  bool transport = false;
   double price = 0.0;
 
   void calculer() {
-    try {
-      DateTime birthDate = DateFormat('dd/MM/yyyy').parseStrict(dateController.text);
-      DateTime currentDate = DateTime.now();
-      int age = currentDate.year - birthDate.year;
-      if (currentDate.month < birthDate.month || (currentDate.month == birthDate.month && currentDate.day < birthDate.day)) {
-        age--;
+    DateTime date = DateFormat('dd/MM/yyyy').parseStrict(dController.text);
+    DateTime today = DateTime.now();
+    int age = today.year - date.year;
+    if (today.month < date.month ||
+        (today.month == date.month && today.day < date.day)) {
+      age--;
+    }
+
+    if (age >= 2 && age <= 5 && convention.isNotEmpty) {
+      switch (age) {
+        case 2:
+          switch (convention) {
+            case "ocp":
+              price = 100.0;
+              break;
+            case "fm6":
+              price = 89.99;
+              break;
+            case "one":
+              price = 85.99;
+              break;
+          }
+          break;
+        case 3:
+          switch (convention) {
+            case "ocp":
+              price = 150.0;
+              break;
+            case "fm6":
+              price = 119.99;
+              break;
+            case "one":
+              price = 105.99;
+              break;
+          }
+          break;
+        case 4:
+          switch (convention) {
+            case "ocp":
+              price = 250.0;
+              break;
+            case "fm6":
+              price = 219.99;
+              break;
+            case "one":
+              price = 205.99;
+              break;
+          }
+          break;
+        case 5:
+          switch (convention) {
+            case "ocp":
+              price = 350.0;
+              break;
+            case "fm6":
+              price = 319.99;
+              break;
+            case "one":
+              price = 305.99;
+              break;
+          }
+          break;
       }
-      if (age >= 1 && age <= 3) {
-        if (vle == "ocp") {
-          price = check ? 150.0 : 80.0;
-        } else if (vle == "fm6") {
-          price = check ? 100.0 : 70.0;
-        } else if (vle == "one") {
-          price = check ? 110.0 : 75.0;
-        }
-      } else if (age >= 3 && age <= 5) {
-        if (vle == "ocp") {
-          price = check ? 250.0 : 180.0;
-        } else if (vle == "fm6") {
-          price = check ? 200.0 : 170.0;
-        } else if (vle == "one") {
-          price = check ? 210.0 : 175.0;
-        }
+      if (transport) {
+        price += 40.0;
       }
-    } catch (e) {
-      print("Invalid date format: $e");
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Error"),
+            content: Text("Invalid date format: "),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
     }
     setState(() {});
   }
@@ -73,121 +130,111 @@ class _M2State extends State<M2> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text("Test"),
+          backgroundColor: Colors.lightGreen,
+          title: Text("Préscolaire"),
         ),
         body: SingleChildScrollView(
-          child: Center(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: TextField(
-                    controller: nomController,
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(25)),
-                        hintText: "Nom de l'enfant"),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: TextField(
-                    controller: prnomController,
-                    decoration: InputDecoration(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: TextField(
+                  controller: nController,
+                  decoration: InputDecoration(
+                      hintText: "Nom",
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                      hintText: "Prénom de l'enfant",
-                    ),
-                  ),
+                          borderRadius: BorderRadius.circular(20))),
                 ),
-                Padding(
-                  padding: EdgeInsets.all(18.0),
-                  child: TextField(
-                    controller: dateController,
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(25)),
-                        hintText: "Date de naissance de l'enfant"),
-                    keyboardType: TextInputType.datetime,
-                  ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: TextField(
+                  controller: pController,
+                  decoration: InputDecoration(
+                      hintText: "Prenom",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20))),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: Row(
-                    children: [
-                      Text("Convention : "),
-                      Text("OCP"),
-                      Expanded(
-                        child: Radio(
-                          value: "ocp",
-                          groupValue: vle,
-                          onChanged: (value) {
-                            setState(() {
-                              vle = value!;
-                            });
-                          },
-                        ),
-                      ),
-                      Text("FM6"),
-                      Expanded(
-                        child: Radio(
-                            value: "fm6",
-                            groupValue: vle,
-                            onChanged: (value) {
-                              setState(() {
-                                vle = value;
-                              });
-                            }),
-                      ),
-                      Text("ONE"),
-                      Expanded(
-                        child: Radio(
-                          value: "one",
-                          groupValue: vle,
-                          onChanged: (value) {
-                            setState(() {
-                              vle = value;
-                            });
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: TextField(
+                  controller: dController,
+                  decoration: InputDecoration(
+                      hintText: "Date",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20))),
                 ),
-                Row(
+              ),
+              Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: Row(
                   children: [
-                    Text("Transport"),
-                    Checkbox(
-                        value: check,
-                        onChanged: (value) {
-                          setState(() {
-                            check = value!;
-                          });
-                        })
+                    const Text("Convention: "),
+                    const Text("OCP: "),
+                    Radio<String>(
+                      groupValue: convention,
+                      value: "ocp",
+                      onChanged: (value) {
+                        setState(() {
+                          convention = value!;
+                        });
+                      },
+                    ),
+                    const Text("FM6 "),
+                    Radio<String>(
+                      groupValue: convention,
+                      value: "fm6",
+                      onChanged: (value) {
+                        setState(() {
+                          convention = value!;
+                        });
+                      },
+                    ),
+                    const Text("ONE"),
+                    Radio<String>(
+                      value: "one",
+                      groupValue: convention,
+                      onChanged: (value) {
+                        setState(() {
+                          convention = value!;
+                        });
+                      },
+                    ),
                   ],
                 ),
-                ElevatedButton(
-                    onPressed: calculer,
-                    child: Text("Calculer")),
-                Text("${price.toStringAsFixed(2)} DH"),
-                ElevatedButton(
-                    onPressed: () {
-                      UserData newData = UserData(
-                        nom: nomController.text,
-                        prenom: prnomController.text,
-                        vle: vle ?? "",
-                        check: check,
-                        price: price,
-                      );
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Eff(data: newData)),
-                      );
-                    },
-                    child: Text("Next")),
-              ],
-            ),
+              ),
+              CheckboxListTile(
+                title: const Text("Transport: "),
+                value: transport,
+                onChanged: (value) {
+                  setState(() {
+                    transport = value!;
+                  });
+                },
+              ),
+              ElevatedButton(
+                onPressed: calculer,
+                child: const Text("Calculer"),
+              ),
+              Text("Prix: ${price.toStringAsPrecision(4)} DH"),
+              ElevatedButton(
+                onPressed: () {
+                  UserData dte = UserData(
+                    nom: nController.text,
+                    prenom: pController.text,
+                    price: price,
+                    check: transport,
+                    vle: convention ?? "",
+                  );
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Eff(data: dte)));
+                },
+                child: const Text("send"),
+              ),
+            ],
           ),
         ),
       ),
